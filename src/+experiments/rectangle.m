@@ -1,0 +1,6 @@
+function rectangle(varargin)
+    paths = [1,1;6,1;6,5;1,5;1,1];    
+    control_loop('logname','rectangle','paths',paths,varargin{:}, ...
+        'draw',true,'maxsegment',0.1,'lutfile','../data/rectangular_chip_lut.mat', ...
+        'ucb_constant',0.001,'ucb_decay',0.999,'controller','ucb1');
+end
