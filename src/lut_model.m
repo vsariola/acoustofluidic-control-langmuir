@@ -10,7 +10,7 @@ function ret = lut_model(varargin)
     
     if isempty(r.lutfile)
         path = fileparts(mfilename('fullpath'));
-        lutfile = fullfile(path,'..','data','example_lut.mat');   
+        lutfile = fullfile(path,'..','data','default_lut.mat');   
     else
         lutfile = r.lutfile;
     end
