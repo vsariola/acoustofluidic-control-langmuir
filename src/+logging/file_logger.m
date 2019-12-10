@@ -1,28 +1,35 @@
 function ret = file_logger(varargin)
-    default_logname = '../results/log';
-    default_logfilename = 'timestamp';
+    default_logpath = '../results/';
+    default_logname = 'log';
+    default_timestamp = true;
+    default_randstring = true;
     default_flushinterval = 1000;
     default_blocksize = 200;
         
     parser = inputParser;
+    parser.addParameter('logpath',default_logpath,@ischar);            
     parser.addParameter('logname',default_logname,@ischar);            
-    parser.addParameter('logfilename',default_logfilename,@ischar);
+    parser.addParameter('timestamp',default_timestamp);
+    parser.addParameter('randstring',default_randstring);    
     parser.addParameter('flushinterval',default_flushinterval,@isnumeric);
     parser.addParameter('blocksize',default_blocksize,@isnumeric);
     parser.addParameter('verbosity',true);    
     parser.KeepUnmatched = true;
     parse(parser,varargin{:});       
     
-    if strcmp(parser.Results.logfilename,'timestamp')
+    filename = fullfile(parser.Results.logpath,parser.Results.logname);
+    
+    if parser.Results.timestamp
+        filename = [filename '-' datestr(datetime('now'),'yyyy-mm-dd--HH-MM-SS')];
+    end
+    
+    if parser.Results.randstring        
         symbols = ['a':'z' 'A':'Z'];
         randstring = symbols(randi(numel(symbols),[1 8]));
-        filename = sprintf('%s-%s-%s.mat',...
-            parser.Results.logname,...
-            datestr(datetime('now'),'yyyy-mm-dd--HH-MM-SS'),...
-            randstring);     
-    else
-        filename = parser.Results.logfilename;
+        filename = [filename '-' randstring];          
     end
+    
+    filename = [filename '.mat'];
 
     if java.io.File(filename).isAbsolute()
         fullpath = filename;
@@ -93,7 +100,7 @@ function ret = file_logger(varargin)
 
     function flush()
         sinceflush = 0;
-        save(filename,'-struct','data');
+        save(fullpath,'-struct','data');
     end
 
     ret = struct('log',@log,'flush',@flush,'message',@message,'get_filename',@()fullpath);
