@@ -1,15 +1,25 @@
-function ret = real_chip(model,varargin)	                    
+function ret = real_chip(model,varargin)	
+    default_draw = false;
+
     parser = inputParser;    
     parser.addRequired('model',@isstruct);                
     parser.addParameter('duration',0.5);        
     parser.addParameter('um_per_pixel',6.9);            
+    parser.addParameter('draw',default_draw);           
     parser.KeepUnmatched = true;
     parse(parser,model,varargin{:});    
     r = parser.Results;     
     logging.message('%s\n%s',mfilename,third_party.struct2str(r));     
-    
+            
     vision.init();    
-    initialize_wavegenerator();       
+    initialize_wavegenerator();                    
+    
+    if r.draw
+        figure;
+        h_img = image(vision.get_frames(1));
+        hold on;
+        h_plot = plot(0,0,'yx');
+    end
                 
     function ret = get_pos()
         % Randomly permutate and drop particle positions, to simulate
@@ -19,6 +29,11 @@ function ret = real_chip(model,varargin)
         ret = vision.find_blobs(img);
         ret = ret * r.um_per_pixel / 1000; % in mm
         logging.log('chip_getpos',ret,'cell');
+        if r.draw
+            h_img.CData = img;            
+            h_plot.XData = ret(:,1);
+            h_plot.YData = ret(:,2);
+        end
     end
 
     function output(n)       

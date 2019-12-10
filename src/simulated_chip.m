@@ -27,6 +27,12 @@ function ret = simulated_chip(model,varargin)
     end
     logging.log('chip_pos',pos);
     
+    if r.draw
+        figure;
+        ax = axes;
+        draw();
+    end
+    
     function ret = get_pos()
         % Randomly permutate and drop particle positions, to simulate
         % a real situation that the machine vision does not always return
@@ -36,9 +42,7 @@ function ret = simulated_chip(model,varargin)
         ret = ret(randperm(size(ret,1)),:);
         logging.log('chip_getpos',ret,'cell');
         if r.draw
-            xlim([0,model.chipwidth]);
-            ylim([0,model.chipheight]);
-            plot(pos(:,1),pos(:,2),'k.');
+            draw();
         end
     end
 
@@ -53,6 +57,13 @@ function ret = simulated_chip(model,varargin)
         pos = pos + [dx,dy] + r.randomness * randn(r.numparticles,2) .* residual;
         pos = max(min(pos,[model.chipwidth,model.chipheight]),[0,0]);                        
         logging.log('chip_pos',pos);
+    end
+
+    function draw()
+        plot(ax,pos(:,1),pos(:,2),'ko');        
+        xlim(ax,[0,model.chipwidth]);
+        ylim(ax,[0,model.chipheight]);     
+        set(ax,'YDir','reverse');
     end
 
     ret = struct('get_pos',@get_pos,'output',@output,'numfreq',model.numfreq);

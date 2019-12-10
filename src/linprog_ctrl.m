@@ -1,10 +1,12 @@
 function ret = linprog_ctrl(model,varargin)
     default_var_weight = 0.5;
+    default_draw = false;
 
     parser = inputParser;    
     parser.addRequired('model');        
     parser.addParameter('var_weight',default_var_weight,@isnumeric);    
-    parser.KeepUnmatched = true;
+    parser.addParameter('draw',default_draw);           
+    parser.KeepUnmatched = true;    
     parse(parser,model,varargin{:});           
     param = parser.Results;
     logging.message('%s\n%s',mfilename,third_party.struct2str(parser.Results));     
@@ -12,7 +14,14 @@ function ret = linprog_ctrl(model,varargin)
     totals = zeros(param.model.numfreq,1);    
     options = optimset('Display', 'off');
    
-    ret = @step;
+    if param.draw
+       figure;
+       h_bar = bar(zeros(1,model.numfreq));
+       ylim([0,1]);
+       colormap hot;
+    end
+    
+    ret = @step;       
     
     function n = step(p,delta)        
         numobj = size(delta,1);        
@@ -39,6 +48,13 @@ function ret = linprog_ctrl(model,varargin)
         alpha = r ./ x;
         [minalpha,n] = min(alpha);
         totals = totals + minalpha * x;
+        if param.draw
+            cdata = zeros(size(totals));
+            cdata(n) = 64;
+            h_bar.YData = totals;
+            h_bar.CData = cdata;
+        end
+    
         totals(n) = 0;        
         logging.log('linprog_totals',totals);        
     end

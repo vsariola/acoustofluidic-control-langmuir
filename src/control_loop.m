@@ -4,7 +4,8 @@ function control_loop(varargin)
 	default_controller = 'linprog';    
     default_task = 'pathfollow';    
     default_grad_eps = 1e-6;
-    default_draw = false;    
+    default_draw = false;  
+    default_close_all = true;
     
     expected_model = {'lut'};
     expected_chip = {'real','simulated'};  
@@ -22,11 +23,18 @@ function control_loop(varargin)
         @(x) isstruct(x) || any(validatestring(x,expected_task)));      
     parser.addParameter('draw',default_draw);
     parser.addParameter('grad_eps',default_grad_eps);
+    parser.addParameter('close_all',default_close_all);    
     parser.KeepUnmatched = true;
     parse(parser,varargin{:});
             
     logging.init(varargin{:});
     logging.message('%s\n%s',mfilename,third_party.struct2str(parser.Results));
+       
+    if parser.Results.draw            
+        if parser.Results.close_all
+            close all;
+        end
+    end
     
     if ischar(parser.Results.model)
         switch(parser.Results.model)         
