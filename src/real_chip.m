@@ -9,9 +9,7 @@ function ret = real_chip(model,varargin)
     logging.message('%s\n%s',mfilename,third_party.struct2str(r));     
     
     vision.init();    
-    initialize_wavegenerator();
-    
-    logging.message('Using real chip (um_per_pixel: %g, duration: %g)',r.um_per_pixel,r.duration);    
+    initialize_wavegenerator();       
                 
     function ret = get_pos()
         % Randomly permutate and drop particle positions, to simulate
