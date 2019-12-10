@@ -1,11 +1,13 @@
 function ret = real_chip(model,varargin)	
     default_draw = false;
+    default_save_images = false;    
 
     parser = inputParser;    
     parser.addRequired('model',@isstruct);                
     parser.addParameter('duration',0.5);        
     parser.addParameter('um_per_pixel',6.9);            
     parser.addParameter('draw',default_draw);           
+    parser.addParameter('save_images',default_save_images);           
     parser.KeepUnmatched = true;
     parse(parser,model,varargin{:});    
     r = parser.Results;     
@@ -28,11 +30,14 @@ function ret = real_chip(model,varargin)
         img = vision.get_frames(1);
         ret = vision.find_blobs(img);
         ret = ret * r.um_per_pixel / 1000; % in mm
-        logging.log('chip_getpos',ret,'cell');
+        logging.log('chip_getpos',ret,'cell');        
         if r.draw
             h_img.CData = img;            
             h_plot.XData = ret(:,1);
             h_plot.YData = ret(:,2);
+        end        
+        if r.save_images
+           logging.log('chip_image',img,'image'); 
         end
     end
 

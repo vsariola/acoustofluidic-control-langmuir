@@ -29,13 +29,11 @@ function ret = file_logger(varargin)
         filename = [filename '-' randstring];          
     end
     
+    imgdir = [filename '_images/'];
     filename = [filename '.mat'];
 
-    if java.io.File(filename).isAbsolute()
-        fullpath = filename;
-    else
-        fullpath = fullfile(cd,filename);
-    end
+    imgdir = get_absolute_path(imgdir);
+    fullpath = get_absolute_path(filename);
         
     data = struct();
     sinceflush = 0;
@@ -58,21 +56,31 @@ function ret = file_logger(varargin)
         end
         ind = [var '_index'];
             
-        if strcmp(type,'cell')
-            if ~isfield(data,var) 
-                data.(var) = {};
-                data.([var '_index']) = 0;
+        if ~isfield(data,var) 
+            if strcmp(type,'image') || strcmp(type,'cell')                
+                data.(var) = {};                
+            else
+                data.(var) = [];                
             end
-            data.(ind) = data.(ind) + 1;
+            data.(ind) = 0;
+        end
+        
+        data.(ind) = data.(ind) + 1;
+        
+        if strcmp(type,'image') || strcmp(type,'cell')
+            if strcmp(type,'image')
+                if ~exist(imgdir,'dir')
+                    mkdir(imgdir);
+                end
+                imgfilename = sprintf('%s-%d.jpg',var,data.(ind));
+                imwrite(value,fullfile(imgdir,imgfilename));
+                value = imgfilename;
+            end
             if length(data.(var)) < data.(ind)
                 data.(var) = [data.(var);cell(data.(ind)+parser.Results.blocksize,1)];
             end
             data.(var){data.(ind)} = value;
         else
-            if ~isfield(data,var) 
-                data.(var) = [];
-                data.([var '_index']) = 0;
-            end
             data.(ind) = data.(ind) + 1;
             vecvalue = reshape(value,1,[]);
             if length(data.(var)) < data.(ind)
@@ -101,6 +109,14 @@ function ret = file_logger(varargin)
     function flush()
         sinceflush = 0;
         save(fullpath,'-struct','data');
+    end
+
+    function ret = get_absolute_path(path)
+        file = java.io.File(path);
+        if ~file.isAbsolute()
+            file = java.io.File(fullfile(cd,path));
+        end
+        ret = file.getAbsolutePath();    
     end
 
     ret = struct('log',@log,'flush',@flush,'message',@message,'get_filename',@()fullpath);
