@@ -32,8 +32,8 @@ function ret = file_logger(varargin)
     imgdir = [filename '_images/'];
     filename = [filename '.mat'];
 
-    imgdir = get_absolute_path(imgdir);
-    fullpath = get_absolute_path(filename);
+    imgdir = char(get_absolute_path(imgdir));
+    fullpath = char(get_absolute_path(filename));
         
     data = struct();
     sinceflush = 0;
@@ -108,6 +108,10 @@ function ret = file_logger(varargin)
 
     function flush()
         sinceflush = 0;
+        path = fileparts(fullpath);
+        if ~exist(path,'dir')
+            mkdir(path);           
+        end
         save(fullpath,'-struct','data');
     end
 
