@@ -88,20 +88,27 @@ function control_loop(varargin)
     end   
         
     logging.message('Control starting at %s.',datestr(datetime('now')));    
-        
-    tic;
+    
+    uifig = uifigure('Position',[100 100 200 100]);        
+    btn = uibutton(uifig,'push',...
+               'Text','Emergency stop', ...
+               'Position',[0,0,200,100],...
+               'ButtonPushedFcn', @(btn,event) set_stopped());    
+    stopped = false;
+    
+    tstart = tic;
     total_steps = 0;
-    while ~task.is_completed()
-        step();
-        if parser.Results.draw            
-            drawnow;
-        end
+    while ~task.is_completed() && ~stopped
+        step();        
+        drawnow;     
         total_steps = total_steps + 1;
-    end
-    total_time = toc;
-        
+    end    
+    total_time = toc(tstart);
+    
     logging.message('Control completed in %d steps / %f seconds.',total_steps,total_time);    
     
+    close(uifig);
+    chip.output(0);
     logging.flush();
     
     %----------------
@@ -134,6 +141,11 @@ function control_loop(varargin)
         after = task.get_cost(task.get_pos());                
         task.update_progress();
         ret = before - after; % When the cost goes down, reward should be positive
+    end
+
+    function set_stopped()
+        logging.message('Emergency stop hit!');    
+        stopped = true;
     end
 end
     

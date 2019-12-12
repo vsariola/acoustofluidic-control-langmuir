@@ -41,14 +41,16 @@ function ret = real_chip(model,varargin)
         end
     end
 
-    function output(n)       
-        logging.log('chip_output',n);        
-        amp = model.amp(n);
-        freq = model.freq(n);        
-        logging.log('chip_amp',amp);        
-        logging.log('chip_freq',freq);                
-        play_wave(amp,freq);
-        pause(r.duration);
+    function output(n) 
+        if n > 0
+            logging.log('chip_output',n);        
+            amp = model.amp(n);
+            freq = model.freq(n);        
+            logging.log('chip_amp',amp);        
+            logging.log('chip_freq',freq);                
+            play_wave(amp,freq);
+            pause(r.duration);
+        end
         play_wave(0);
     end
 

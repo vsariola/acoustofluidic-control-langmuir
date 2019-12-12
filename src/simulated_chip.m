@@ -47,16 +47,18 @@ function ret = simulated_chip(model,varargin)
     end
 
     function output(n)
-        dx = model.dx(pos(:,1),pos(:,2),n);
-        dy = model.dy(pos(:,1),pos(:,2),n);        
-        residual = model.residual(pos(:,1),pos(:,2),n);
-        logging.log('chip_output',n);
-        logging.log('chip_dx',dx);
-        logging.log('chip_dy',dx);
-        logging.log('chip_residual',dx);
-        pos = pos + [dx,dy] + r.randomness * randn(r.numparticles,2) .* residual;
-        pos = max(min(pos,[model.chipwidth,model.chipheight]),[0,0]);                        
-        logging.log('chip_pos',pos);
+        if n > 0
+            dx = model.dx(pos(:,1),pos(:,2),n);
+            dy = model.dy(pos(:,1),pos(:,2),n);        
+            residual = model.residual(pos(:,1),pos(:,2),n);
+            logging.log('chip_output',n);
+            logging.log('chip_dx',dx);
+            logging.log('chip_dy',dx);
+            logging.log('chip_residual',dx);
+            pos = pos + [dx,dy] + r.randomness * randn(r.numparticles,2) .* residual;
+            pos = max(min(pos,[model.chipwidth,model.chipheight]),[0,0]);                        
+            logging.log('chip_pos',pos);
+        end
     end
 
     function draw()
