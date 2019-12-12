@@ -5,3 +5,4 @@ output/
 *.mex*
 *.jpg*
 *.png*
+results/
