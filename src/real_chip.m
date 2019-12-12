@@ -18,7 +18,7 @@ function ret = real_chip(model,varargin)
     
     if r.draw
         figure;
-        h_img = image(vision.get_frames(1));
+        h_img = image(vision.get_frame());
         hold on;
         h_plot = plot(0,0,'yx');
     end
@@ -27,7 +27,7 @@ function ret = real_chip(model,varargin)
         % Randomly permutate and drop particle positions, to simulate
         % a real situation that the machine vision does not always return
         % the particles in same order and might not detect them
-        img = vision.get_frames(1);
+        img = vision.get_frame();
         ret = vision.find_blobs(img);
         ret = ret * r.um_per_pixel / 1000; % in mm
         logging.log('chip_getpos',ret,'cell');        

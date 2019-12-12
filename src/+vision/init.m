@@ -16,4 +16,17 @@ function init()
         tlr = round((tl+br-s)/4)*2;        
         vid.ROIPosition = [tlr s];        
         fprintf('Video initialized: %s\n',vid.Name);
+        vid.TriggerRepeat = Inf;
+        vid.FrameGrabInterval = 5;
+        vid.FramesAcquiredFcn = @myimaqcallback;
+        vid.FramesAcquiredFcnCount = 1;
+        
+        start(vid);                
     end      
+   
+    function myimaqcallback(obj, ~)
+        while(vid.FramesAvailable > 0)
+            getdata(obj,obj.FramesAcquiredFcnCount);
+        end
+    end
+end
