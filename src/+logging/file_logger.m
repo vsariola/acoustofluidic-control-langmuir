@@ -80,8 +80,7 @@ function ret = file_logger(varargin)
                 data.(var) = [data.(var);cell(data.(ind)+parser.Results.blocksize,1)];
             end
             data.(var){data.(ind)} = value;
-        else
-            data.(ind) = data.(ind) + 1;
+        else            
             vecvalue = reshape(value,1,[]);
             if length(data.(var)) < data.(ind)
                 data.(var) = [data.(var);nan(data.(ind)+parser.Results.blocksize,length(vecvalue))];
