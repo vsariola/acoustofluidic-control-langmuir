@@ -97,11 +97,20 @@ function control_loop(varargin)
     stopped = false;
     
     tstart = tic;
+    t_since = tic;    
     total_steps = 0;
+    total_steps_since = 0;
     while ~task.is_completed() && ~stopped
         step();        
         drawnow;     
         total_steps = total_steps + 1;
+        total_steps_since = total_steps_since + 1;
+        time_since = toc(t_since);
+        if time_since > 3
+            uifig.Name = sprintf('%.2g steps per second',total_steps_since / time_since);
+            total_steps_since = 0;
+            t_since = tic;
+        end
     end    
     total_time = toc(tstart);
     
