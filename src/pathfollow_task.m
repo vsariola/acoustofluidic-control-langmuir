@@ -5,6 +5,8 @@ function ret = pathfollow_task(varargin)
     default_waypointtol = 0.1;
     default_tracker = [];
     default_draw = false;
+    default_chipwidth = 7;
+    default_chipheight = 6;
     default_first_detection = [];
 
     parser = inputParser;
@@ -17,6 +19,8 @@ function ret = pathfollow_task(varargin)
     parser.addParameter('maxsegment',default_maxsegment);        
     parser.addParameter('minsegment',default_minsegment); 
     parser.addParameter('waypointtol',default_waypointtol);            
+    parser.addParameter('chipwidth',default_chipwidth);           
+    parser.addParameter('chipheight',default_chipheight);           
     parser.addParameter('draw',default_draw);           
     parser.KeepUnmatched = true;
     parse(parser,varargin{:});
@@ -28,7 +32,7 @@ function ret = pathfollow_task(varargin)
     elseif isnumeric(r.paths)
         paths = cell(1,size(r.paths,2)/2);
         for i = 1:2:size(r.paths,2)
-            paths{i} = r.paths(:,i:i+1);           
+            paths{(i+1)/2} = r.paths(:,i:i+1);           
         end
     else
         paths = r.paths;
@@ -43,13 +47,14 @@ function ret = pathfollow_task(varargin)
             f = figure;
             plot(r.first_detection(:,1),r.first_detection(:,2),'k.');
             hold on;
-            plot(first_target(:,1),first_target(:,2),'bx');
+            plot(first_target(:,1),first_target(:,2),'bx');            
+            axis([0 r.chipwidth 0 r.chipheight]);
             arrayfun(@(x,y,i)text(x,y,sprintf('Target %d',i)), ...
-                first_target(:,1),first_target(:,2),1:size(first_target,1));
+                first_target(:,1)',first_target(:,2)',1:size(first_target,1));
             set(gca,'YDir','reverse');
             startpos = zeros(length(paths),2);
             for i = 1:length(paths)
-                title('Click on the first particle');
+                title(sprintf('Click on particle %d',i));
                 g = ginput(1);
                 startpos(i,:) = g;            
             end        
@@ -97,7 +102,7 @@ function ret = pathfollow_task(varargin)
             plot(ax,positions(:,1),positions(:,2),'k.');
         end           
         for j = 1:length(paths)          
-            while progress(j) < length(paths{j}) && ...
+            while progress(j) < size(paths{j},1) && ...
                   dist(paths{j}(progress(j),:),positions(j,:)) < r.waypointtol
                 % advance waypoints until we have reached the last waypoint
                 progress(j) = progress(j) + 1;                

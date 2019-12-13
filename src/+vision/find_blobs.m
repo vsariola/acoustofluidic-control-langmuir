@@ -5,7 +5,7 @@
      DIAM = 8;
     EDGEBLUR = 3;
     EDGEBLUR_FILTSIZE = 6; 
-    COLOR_THRESHOLD = 0.6;
+    COLOR_THRESHOLD = 0.8;
     DESIRED_COLOR = [0.22 0.17]; % R/B and G/B of the color we are looking 
  
     if nargin < 2

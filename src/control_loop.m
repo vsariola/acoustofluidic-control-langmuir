@@ -65,6 +65,7 @@ function control_loop(varargin)
             case 'pathfollow'
                 first_detection = chip.get_pos();
                 task = pathfollow_task('first_detection',first_detection, ...
+                    'chipwidth',model.chipwidth,'chipheight',model.chipheight,...
                     varargin{:});                    
             otherwise % Customer task supplied by the user
                 error('Unknown task name');        
