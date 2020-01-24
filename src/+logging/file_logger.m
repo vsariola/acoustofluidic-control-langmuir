@@ -48,6 +48,8 @@ function ret = file_logger(varargin)
         if nargin < 3
             if isfield(data,var)
                 type = class(data.(var));
+            elseif isstruct(value)
+                type = 'struct';
             elseif ischar(value)
                 type = 'cell';
             else
@@ -57,7 +59,11 @@ function ret = file_logger(varargin)
         ind = [var '_index'];
             
         if ~isfield(data,var) 
-            if strcmp(type,'image') || strcmp(type,'cell')                
+            if strcmp(type,'struct')
+                fields_vals = cellfun(@(x){x,{}}',fieldnames(value),'UniformOutput',false);
+                flattened = vertcat(fields_vals{:});
+                data.(var) = struct(flattened{:});
+            elseif strcmp(type,'image') || strcmp(type,'cell')                
                 data.(var) = {};                
             else
                 data.(var) = [];                
@@ -67,7 +73,9 @@ function ret = file_logger(varargin)
         
         data.(ind) = data.(ind) + 1;
         
-        if strcmp(type,'image') || strcmp(type,'cell')
+        if strcmp(type,'struct')
+            data.(var)(data.(ind)) = value;         
+        elseif strcmp(type,'image') || strcmp(type,'cell')
             if strcmp(type,'image')
                 if ~exist(imgdir,'dir')
                     mkdir(imgdir);
@@ -79,7 +87,7 @@ function ret = file_logger(varargin)
             if length(data.(var)) < data.(ind)
                 data.(var) = [data.(var);cell(data.(ind)+parser.Results.blocksize,1)];
             end
-            data.(var){data.(ind)} = value;
+            data.(var){data.(ind)} = value;        
         else            
             vecvalue = reshape(value,1,[]);
             if length(data.(var)) < data.(ind)

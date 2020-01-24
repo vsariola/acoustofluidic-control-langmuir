@@ -55,6 +55,27 @@ classdef test_logging < matlab.unittest.TestCase
             end
         end
         
+        function testStruct(testCase)
+            testvalue = struct('a',5,'b',[1 2],'c','hello');
+            logging.log('testdata',testvalue);
+            logging.flush();
+            D = load(logging.get_filename());
+            testCase.assertEqual(D.testdata(1),testvalue);
+        end
+                
+        function testManyStructs(testCase)
+            testvalue = struct('a',5,'b',[1 2],'c','hello');
+            numvalues = 1000;
+            for i = 1:numvalues
+                logging.log('testdata',testvalue);
+            end
+            logging.flush();
+            D = load(logging.get_filename());
+            for i = 1:numvalues
+                testCase.assertEqual(D.testdata(i),testvalue);
+            end
+        end
+        
         function testDouble(testCase)
             testvalue = [1,2,3];
             logging.log('testdata',testvalue);
