@@ -5,6 +5,8 @@ function ret = file_logger(varargin)
     default_randstring = true;
     default_flushinterval = 1000;
     default_blocksize = 200;
+    
+    INDEX_POSTFIX = '__index';
         
     parser = inputParser;
     parser.addParameter('logpath',default_logpath,@ischar);            
@@ -56,7 +58,7 @@ function ret = file_logger(varargin)
                 type = 'double';
             end
         end
-        ind = [var '_index'];
+        ind = [var INDEX_POSTFIX];
             
         if ~isfield(data,var) 
             if strcmp(type,'struct')
@@ -118,8 +120,29 @@ function ret = file_logger(varargin)
         path = fileparts(fullpath);
         if ~exist(path,'dir')
             mkdir(path);           
+        end  
+        expdata = exported_data();
+        save(fullpath,'-struct','expdata');
+    end
+
+    function ret = exported_data()
+        ret = data;
+        fnames = fieldnames(data);
+        for i = 1:length(fnames)
+           name = fnames{i};
+           postfix = name(max(end-length(INDEX_POSTFIX)+1,1):end);
+           if strcmp(postfix,INDEX_POSTFIX)
+               var = name(1:(end-length(INDEX_POSTFIX)));
+               val = ret.(var);
+               ind = ret.(name);
+               if iscell(val) || isstruct(val)
+                   ret.(var) = val(1:ind);
+               else
+                   ret.(var) = val(1:ind,:);
+               end
+               ret = rmfield(ret,name);
+           end
         end
-        save(fullpath,'-struct','data');
     end
 
     function ret = get_absolute_path(path)

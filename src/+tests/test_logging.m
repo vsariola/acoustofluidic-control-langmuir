@@ -50,9 +50,10 @@ classdef test_logging < matlab.unittest.TestCase
             end
             logging.flush();
             D = load(logging.get_filename());
+            testCase.assertEqual(length(D.testdata),numvalues);
             for i = 1:numvalues
                 testCase.assertEqual(D.testdata{i},testvalue);
-            end
+            end            
         end
         
         function testStruct(testCase)
@@ -71,6 +72,7 @@ classdef test_logging < matlab.unittest.TestCase
             end
             logging.flush();
             D = load(logging.get_filename());
+            testCase.assertEqual(length(D.testdata),numvalues);
             for i = 1:numvalues
                 testCase.assertEqual(D.testdata(i),testvalue);
             end
@@ -84,14 +86,14 @@ classdef test_logging < matlab.unittest.TestCase
             testCase.assertEqual(D.testdata(1,:),testvalue);
         end
         
-         function testDoubleReshaping(testCase)
+        function testDoubleReshaping(testCase)
             testvalue = [1,2;3,4;5,6]; % Data should flatten into 1 x 6 row
             logging.log('testdata',testvalue);
             logging.flush();
             D = load(logging.get_filename());
             testCase.assertEqual(D.testdata(1,:),reshape(testvalue,1,[]));
         end
-        
+               
         function testManyDoubles(testCase)
             testvalue = [1,2,3];
             numvalues = 1000;
@@ -100,6 +102,7 @@ classdef test_logging < matlab.unittest.TestCase
             end
             logging.flush();
             D = load(logging.get_filename());
+            testCase.assertEqual(length(D.testdata),numvalues);
             for i = 1:numvalues
                 testCase.assertEqual(D.testdata(i,:),testvalue);
             end
