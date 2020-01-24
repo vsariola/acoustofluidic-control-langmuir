@@ -23,10 +23,7 @@ function ret = bandit_ctrl(reward,num_bandits,varargin)
     played = zeros(1,param.num_bandits);  
     means = zeros(1,param.num_bandits);
     vars = zeros(1,param.num_bandits);
-    logging.log('bandit_counts',played);
-    
-    
-    
+     
     if param.draw
         figure;           
         h_bar = bar(zeros(1,num_bandits));
@@ -89,9 +86,6 @@ function ret = bandit_ctrl(reward,num_bandits,varargin)
         deltavar = deltamean * (r - means(a)) - vars(a);
         % Updating variances, in recursive form. Notice r - means(a) is
         % computed before and after updating means(a)
-        vars(a) = vars(a) + deltavar / played(a); % biased estimator        
-        logging.log('bandit_played',played);        
-        logging.log('bandit_means',means);        
-        logging.log('bandit_vars',vars);        
+        vars(a) = vars(a) + deltavar / played(a); % biased estimator         
     end
 end
