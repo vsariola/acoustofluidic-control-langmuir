@@ -13,8 +13,8 @@ function ret = real_chip(model,varargin)
     r = parser.Results;     
     logging.message('%s\n%s',mfilename,third_party.struct2str(r));     
             
-    logging.log('chip_amp',model.amp);
-    logging.log('chip_freq',model.freq);
+    logging.log('chip_model_amp',model.amp);
+    logging.log('chip_model_freq',model.freq);
     
     vision.init();    
     initialize_wavegenerator();                    
