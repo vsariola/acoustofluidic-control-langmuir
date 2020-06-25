@@ -31,7 +31,7 @@ function ret = real_chip(model,varargin)
         % a real situation that the machine vision does not always return
         % the particles in same order and might not detect them
         img = vision.get_frame();
-        ret = vision.find_blobs(img);
+        ret = vision.detect(img,varargin{:});
         ret = ret * r.um_per_pixel / 1000; % in mm
         logging.log('chip_getpos',ret,'cell');        
         if r.draw
